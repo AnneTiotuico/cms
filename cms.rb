@@ -2,6 +2,7 @@ require "sinatra"
 require "sinatra/reloader"
 require "tilt/erubis"
 require "sinatra/content_for"
+require "redcarpet"
 
 configure do
   set :erb, :escape_html => true
@@ -18,6 +19,11 @@ get "/" do
   erb :index
 end
 
+def render_markdown(text)
+  markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+  markdown.render(text)
+end
+
 def view_file(file_name)
   return file_name if Dir.children('data').include? (file_name)
 
@@ -30,6 +36,10 @@ get "/:filename" do
   file_name = params[:filename]
   view_file(file_name)
 
-  headers["Content-Type"] = "text/plain"
-  File.read(file_path)
+  if File.extname(file_name) == ".md"
+    render_markdown(File.read(file_path))
+  else
+    headers["Content-Type"] = "text/plain"
+    File.read(file_path)
+  end
 end
