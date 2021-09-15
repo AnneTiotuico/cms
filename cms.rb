@@ -3,14 +3,14 @@ require "sinatra/reloader"
 require "tilt/erubis"
 require "sinatra/content_for"
 require "redcarpet"
+require "fileutils"
+
 
 configure do
   set :erb, :escape_html => true
   enable :sessions
   set :session_secret, 'secret'
 end
-
-root = File.expand_path("..", __FILE__)
 
 def render_markdown(text)
   markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
@@ -45,6 +45,10 @@ get "/" do
   erb :index, layout: :layout
 end
 
+get "/new" do
+  erb :new_file
+end
+
 get "/:filename" do
   file_path = File.join(data_path, params[:filename])
 
@@ -65,6 +69,26 @@ get "/:filename/edit" do
   erb :edit_file
 end
 
+post "/new" do
+  new_filename = params[:filename].to_s
+  
+  if new_filename.empty?
+    session[:message] = "A name is required."
+    status 422
+    erb :new_file
+  elsif ![".md", ".txt"].include?(File.extname(new_filename))
+    session[:message] = "Please include a valid extension, '.md' or '.txt'."
+    status 422
+    erb :new_file
+  else
+    file_path = File.join(data_path, new_filename)
+    File.write(file_path, "")
+    
+    session[:message] = "#{new_filename} was created."
+    redirect "/"
+  end
+end
+
 post "/:filename" do
   file_path = File.join(data_path, params[:filename])
   
@@ -73,3 +97,6 @@ post "/:filename" do
   session[:message] = "#{params[:filename]} has been updated."
   redirect "/"
 end
+
+
+

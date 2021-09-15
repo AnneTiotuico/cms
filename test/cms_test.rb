@@ -79,22 +79,58 @@ class CMSTest < Minitest::Test
     
     get "/changes.txt/edit"
 
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "<textarea"
-    assert_includes last_response.body, %q(<button type="submit")
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, "<textarea")
+    assert_includes(last_response.body, %q(<button type="submit"))
   end
 
   def test_updating_document
     post "/changes.txt", content: "new content"
 
-    assert_equal 302, last_response.status
+    assert_equal(302, last_response.status)
 
     get last_response["Location"]
 
-    assert_includes last_response.body, "changes.txt has been updated"
+    assert_includes(last_response.body, "changes.txt has been updated")
 
     get "/changes.txt"
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "new content"
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, "new content")
+  end
+  
+  def test_view_new_file_form
+    get "/new"
+    
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, "<input")
+    assert_includes(last_response.body, %q(<button type="submit"))
+  end
+  
+  def test_create_new_file
+    post "/new", filename: "text.txt"
+    
+    assert_equal(302, last_response.status)
+    
+    get last_response["Location"]
+    assert_includes(last_response.body, "text.txt was created")
+    
+    get "/"
+    assert_includes(last_response.body, "text.txt")
+  end
+  
+  def test_create_new_file_without_filename
+    post "/new", filename: ""
+    
+    assert_equal(422, last_response.status)
+
+    assert_includes(last_response.body, "A name is required")
+  end
+  
+  def test_create_new_file_without_extension
+    post "/new", filename: "test"
+    
+    assert_equal(422, last_response.status)
+
+    assert_includes(last_response.body, "Please include a valid extension, '.md' or '.txt'.")
   end
 end
