@@ -3,11 +3,14 @@
   <head>
     <title>File-based CMS</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=PT+Sans">
+    <link rel="stylesheet" href="/stylesheets/cms.css" type="text/css">
   </head>
   <body>
     <% if session[:message] %>
-          <p><%= session.delete(:message) %></p>
+      <p class="message"><%= session.delete(:message) %></p>
     <% end %>
+    
 
     <main>
       <%== yield %>
