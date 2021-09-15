@@ -133,4 +133,18 @@ class CMSTest < Minitest::Test
 
     assert_includes(last_response.body, "Please include a valid extension, '.md' or '.txt'.")
   end
+  
+  def test_delete_file
+    create_document("test.txt")
+    
+    post "/test.txt/delete"
+    
+    assert_equal(302, last_response.status)
+    
+    get last_response["Location"]
+    assert_includes(last_response.body, "test.txt was deleted")
+    
+    get "/"
+    refute_includes(last_response.body, "test.txt")
+  end
 end
