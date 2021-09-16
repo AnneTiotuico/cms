@@ -35,6 +35,17 @@ def data_path
   end
 end
 
+def signed_in?
+  session[:username]
+end
+
+def not_signed_in
+  unless signed_in?
+    session[:message] = "You must be signed in to do that."
+    redirect "/"
+  end
+end
+
 get "/" do
   pattern = File.join(data_path, "*")
   @files = Dir.glob(pattern).map do |path|
@@ -45,6 +56,8 @@ get "/" do
 end
 
 get "/new" do
+  not_signed_in
+  
   erb :new_file
 end
 
@@ -60,6 +73,8 @@ get "/:filename" do
 end
 
 get "/:filename/edit" do
+  not_signed_in
+  
   file_path = File.join(data_path, params[:filename])
   
   @filename = params[:filename]
@@ -69,6 +84,8 @@ get "/:filename/edit" do
 end
 
 post "/new" do
+  not_signed_in
+  
   new_filename = params[:filename].to_s
   
   if new_filename.empty?
@@ -89,6 +106,8 @@ post "/new" do
 end
 
 post "/:filename" do
+  not_signed_in
+  
   file_path = File.join(data_path, params[:filename])
   
   File.write(file_path, params[:content])
@@ -98,6 +117,8 @@ post "/:filename" do
 end
 
 post "/:filename/delete" do
+  not_signed_in
+  
   file_path = File.join(data_path, params[:filename])
   File.delete(file_path)
   
