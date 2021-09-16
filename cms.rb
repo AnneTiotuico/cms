@@ -5,21 +5,10 @@ require "sinatra/content_for"
 require "redcarpet"
 require "fileutils"
 
-
 configure do
   set :erb, :escape_html => true
   enable :sessions
   set :session_secret, 'secret'
-end
-
-helpers do 
-  def signed_in?
-    !current_user.nil?
-  end
-  
-  def current_user
-    @current_user ||= session[:username]
-  end
 end
 
 def render_markdown(text)
