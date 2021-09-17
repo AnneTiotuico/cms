@@ -11,6 +11,8 @@ gem "minitest"
 
 gem "redcarpet"
 
+gem "bcrypt"
+
 group :production do
   gem "puma"
 end

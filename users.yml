@@ -1,5 +1,5 @@
 {
-  admin: secret,
-  anne: annepassword,
-  quinn: quinnpassword
+  admin: "$2a$12$1HjdFfKPnA6vGlQRtEUE2OVfrhG2PJjUC616nKbGyT7WmQRA3Pxc6",
+  anne: "$2a$12$B.yUnHua/QRABz8PSWz/1O9kNtyVr5YT2g21PmnBYVAcdhJPo9YFe" ,
+  quinn: "$2a$12$xILIvQcEIorv/pFMR8Jmye8S/qNJUDj3PEmmxbnvqRsWntJ6NxMXi"
 }

@@ -5,6 +5,7 @@ require "sinatra/content_for"
 require "redcarpet"
 require "fileutils"
 require "yaml"
+require "bcrypt"
 
 configure do
   set :erb, :escape_html => true
@@ -140,10 +141,16 @@ get "/users/signin" do
   erb :signin
 end
 
-post "/users/signin" do
+def valid_credentials?(username, password)
   credentials = load_user_credentials
   
-  if credentials[params[:username]] == params[:password]
+  if credentials.key?(username)
+    BCrypt::Password.new(credentials[username]) == password
+  end
+end
+
+post "/users/signin" do
+  if valid_credentials?(params[:username], params[:password])
     session[:username] = params[:username] 
     session[:message] = "Welcome!"
     redirect "/"
