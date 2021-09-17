@@ -137,6 +137,23 @@ post "/:filename/delete" do
   redirect "/"
 end
 
+def copy_filename(original_file)
+  basename = File.basename(original_file, ".*") 
+  ext = File.extname(original_file)
+  copy = "#{basename}_duplicate#{ext}"
+  File.join(data_path, copy)
+end
+
+post "/:filename/duplicate" do
+  not_signed_in
+  original_file = File.join(data_path, params[:filename])
+  copied_file = copy_filename(original_file)
+  File.copy_stream(original_file, copied_file)
+  
+  session[:message] = "#{params[:filename]} was duplicated."
+  redirect "/"
+end
+
 get "/users/signin" do
   erb :signin
 end

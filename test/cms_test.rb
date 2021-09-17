@@ -231,4 +231,25 @@ class CMSTest < Minitest::Test
     assert_nil session[:message]
     assert_includes(last_response.body, %q(<button type="submit">Sign In))
   end
+  
+  def test_duplicate_exisiting_file
+    create_document("test.txt")
+    
+    post "/test.txt/duplicate", {}, admin_session
+    
+    assert_equal(302, last_response.status)
+    assert_includes("test.txt was duplicated.", session[:message])
+    
+    get "/"
+    assert_includes(last_response.body, %q(href="/test.txt"))
+  end
+  
+  def test_duplicate_exisiting_file_signed_out
+    create_document("test.txt")
+    
+    post "/test.txt/duplicate"
+    
+    assert_equal(302, last_response.status)
+    assert_includes("You must be signed in to do that.", session[:message])
+  end
 end
